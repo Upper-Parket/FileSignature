@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Signature
 {
@@ -22,17 +23,18 @@ namespace Signature
         {
             lock (_lockObject)
             {
-                if (!CanReadBlock(buffer.Length))
+                if (IsFileReadComplete())
                     return -1;
-
+                
+                Array.Clear(buffer, 0, buffer.Length);
                 _fileStream.Read(buffer, 0, buffer.Length);
                 return _readPart++;
             }
         }
 
-        private bool CanReadBlock(int blockLength)
+        private bool IsFileReadComplete()
         {
-            return _fileStream.Position + blockLength < _fileStream.Length;
+            return _fileStream.Position == _fileStream.Length;
         }
     }
 }
